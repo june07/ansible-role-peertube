@@ -10,7 +10,7 @@
     name: '{{ peertube__user }}'
     group: '{{ peertube__group }}'
     system: true
-    create_home: false
+    create_home: true
   notify: peertube | systemd
 
 - name: Create directories
@@ -26,15 +26,6 @@
     - '{{ peertube__config_dir }}'
     - '{{ peertube__storage_dir }}'
     - '{{ peertube__versions_dir }}'
-
-- name: Create config
-  template:
-    src: templates/production.yaml
-    dest: '{{ peertube__config_file }}'
-    mode: 'u=rwx,g=,o='
-    owner: '{{ peertube__user }}'
-    group: '{{ peertube__group }}'
-  notify: peertube | systemd
 
 - name: Fetch archive
   get_url:
@@ -54,11 +45,31 @@
     group: '{{ peertube__group }}'
   notify: peertube | systemd
 
-- name: Create link to current version
+- name: Create link to latest version
   file:
     state: link
     src: '{{ peertube__version_dir }}'
-    dest: '{{ peertube__current_link }}'
+    dest: '{{ peertube__latest_link }}'
+    owner: '{{ peertube__user }}'
+    group: '{{ peertube__group }}'
+  notify: peertube | systemd
+
+- name: Copy default config
+  copy:
+    src: '{{ peertube__latest_link }}/config/default.yaml'
+    remote_src: true
+    dest: '{{ peertube__config_dir }}/default.yaml'
+    mode: 'u=rwx,g=,o='
+    owner: '{{ peertube__user }}'
+    group: '{{ peertube__group }}'
+  notify: peertube | systemd
+
+- name: Copy production config
+  copy:
+    src: '{{ peertube__latest_link }}/config/production.yaml.example'
+    remote_src: true
+    dest: '{{ peertube__config_file }}'
+    mode: 'u=rwx,g=,o='
     owner: '{{ peertube__user }}'
     group: '{{ peertube__group }}'
   notify: peertube | systemd

@@ -1,0 +1,21 @@
+- name: Create peertube postgresql user
+  postgresql_user:
+    name: peertube
+    password: '{{ peertube__database_password }}'
+
+- name: Create a new database with name "peertube" and specific encoding
+  postgresql_db:
+    name: peertube_prod
+    encoding: UTF-8
+    template: template0
+    owner: peertube
+
+- name: Create required postgresql extension pg_trgm
+  postgresql_ext:
+    db: peertube_prod
+    name: pg_trgm
+
+- name: Create required postgresql extension unaccent
+  postgresql_ext:
+    db: peertube_prod
+    name: unaccent

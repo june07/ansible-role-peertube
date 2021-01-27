@@ -6,7 +6,7 @@ peertube__service: peertube
 peertube__dir: '/var/www/peertube'
 
 peertube__config_dir:   '{{ peertube__dir }}/config'
-peertube__current_link: '{{ peertube__dir }}/current'
+peertube__latest_link: '{{ peertube__dir }}/peertube-latest'
 peertube__storage_dir:  '{{ peertube__dir }}/storage'
 peertube__versions_dir: '{{ peertube__dir }}/versions'
 

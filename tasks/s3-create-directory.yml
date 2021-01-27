@@ -1,0 +1,15 @@
+- name: Create directory
+  stat:
+    path: '{{ peertube__s3_storage_directory }}{{ item }}'
+  register: directory_stat
+- debug:
+    msg: "Path exists and is a directory"
+  when: directory_stat.stat.isdir is defined and directory_stat.stat.isdir
+- name: Create s3 storage directory if it does not exist
+  file:
+    path: '{{ peertube__s3_storage_directory }}{{ item }}'
+    state: directory
+    mode: '0755'
+    owner: peertube
+    group: peertube
+  when: directory_stat.stat.isdir is not defined

@@ -9,7 +9,7 @@ Environment=NODE_CONFIG_DIR={{ peertube__config_dir }}
 User={{ peertube__user }}
 Group={{ peertube__group }}
 ExecStart={{ peertube__npm }} start
-WorkingDirectory={{ peertube__current_link }}
+WorkingDirectory={{ peertube__latest_link }}
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier={{ peertube__service }}

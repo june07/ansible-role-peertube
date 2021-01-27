@@ -1,0 +1,54 @@
+- name: Get peertube user id
+  ansible.builtin.shell: id -u peertube
+  args:
+    executable: /bin/bash
+  register: peertube__uid
+
+- name: Get peertube group id
+  ansible.builtin.shell: id -g peertube
+  args:
+    executable: /bin/bash
+  register: peertube__gid
+
+- name: Create credentials file
+  template:
+    src: '{{ role_path }}/templates/.passwd-s3fs'
+    dest: ~/.passwd-s3fs
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Check s3fs mount
+  stat:
+    path: '{{ peertube__s3_storage_directory }}'
+  register: directory_stat
+
+- debug:
+    msg: "Path exists and is a directory"
+  when: directory_stat.stat.isdir is defined and directory_stat.stat.isdir
+
+- name: Run s3fs with digitalocean bucket
+  shell: |
+    s3fs {{ peertube__s3_bucket_name }} {{ peertube__s3_storage_directory }} -o url={{ peertube__s3_bucket_url }} -o allow_other -o use_path_request_style -o uid={{ peertube__uid.stdout }} -o gid={{ peertube__gid.stdout }}
+  when: directory_stat.stat.isdir is not defined
+
+- name: Create s3 storage directories if it does not exist
+  include_tasks: s3-create-directory.yml
+  with_items:
+    - ''
+    - '/videos'
+    - '/redundancy'
+    - '/streaming-playlists'
+
+- name: Mount and bind s3 subdirs
+  mount:
+    path: '/var/www/peertube/storage/{{ item }}'
+    src: '{{ peertube__s3_storage_directory }}/{{ item }}'
+    opts: bind,uid={{ peertube__uid.stdout }},gid={{ peertube__gid.stdout }}
+    state: mounted
+    fstype: none
+  with_items:
+    - videos
+    - redundancy
+    - streaming-playlists
+

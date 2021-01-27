@@ -10,7 +10,7 @@ class ActionModule(ActionBase):
         'archive_file',
         'config_dir',
         'config_file',
-        'current_link',
+        'latest_link',
         'dir',
         'group',
         'npm',
@@ -81,7 +81,7 @@ class ActionModule(ActionBase):
         if not self.path_re.fullmatch(value):
             return 'does not match format %s' % self.path_re
 
-    def validate_current_link(self, value):
+    def validate_latest_link(self, value):
         if not isinstance(value, str):
             return 'is not str'
         if not self.path_re.fullmatch(value):

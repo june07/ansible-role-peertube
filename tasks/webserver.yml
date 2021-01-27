@@ -1,0 +1,21 @@
+- name: Copy nginx configuration template
+  copy:
+    src: '{{ peertube__versions_dir }}/peertube-v{{ peertube__version }}/support/nginx/peertube'
+    remote_src: yes
+    dest: /etc/nginx/sites-available/peertube
+
+- name: Update web server host variable
+  shell: |
+    sudo sed -i 's/${WEBSERVER_HOST}/{{ peertube__webserver_hostname }}/g' /etc/nginx/sites-available/peertube
+    sudo sed -i 's/${PEERTUBE_HOST}/127.0.0.1:9000/g' /etc/nginx/sites-available/peertube
+
+- name: Update peertube config
+  shell: |
+    sudo sed -i 's/admin@example.com/{{ peertube__email_address }}/g' /var/www/peertube/config/production.yaml
+    sudo sed -i 's/@Chocobozzz/{{ peertube__twitter_handle }}/g' /var/www/peertube/config/production.yaml
+    sudo sed -i "s/password: 'peertube'/password: '{{ peertube__database_password }}'/g" /var/www/peertube/config/production.yaml
+    sudo sed -i 's/#    - en/    - en/g' /var/www/peertube/config/production.yaml
+
+- name: Activate site configuration file
+  shell: sudo ln -s /etc/nginx/sites-available/peertube /etc/nginx/sites-enabled/peertube
+

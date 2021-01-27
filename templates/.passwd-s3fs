@@ -1,0 +1,1 @@
+{{ peertube__s3_key }}:{{ peertube__s3_secret }}

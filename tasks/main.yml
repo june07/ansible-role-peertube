@@ -2,4 +2,16 @@
 - name: Validate variables
   action: validate_vars
 
-- include_tasks: peertube.yml
+- import_tasks: deps.yml
+
+- import_tasks: peertube.yml
+
+- import_tasks: webserver.yml
+
+- name: database tasks
+  become: yes
+  become_user: postgres
+  import_tasks: database.yml
+
+- import_tasks: s3.yml
+

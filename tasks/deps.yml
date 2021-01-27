@@ -1,0 +1,29 @@
+- name: Run nodesource setup script
+  shell: curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+
+- name: Install Apt Deps
+  apt:
+    pkg:
+      - unzip
+      - nginx
+      - nodejs
+      - certbot
+      - ffmpeg
+      - postgresql
+      - postgresql-contrib
+      - openssl
+      - g++
+      - make
+      - redis-server
+      - git
+      - python3-dev
+      - python3-pip
+      - python3-psycopg2
+      - python3-setuptools
+      - s3fs
+
+- name: Install "yarn" node.js package globally.
+  npm:
+    name: yarn
+    global: yes
+
